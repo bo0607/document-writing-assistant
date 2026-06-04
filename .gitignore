@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+backend/data/tasks/*.json
+backend/data/exports/*
+backend/server.pid
+backend/*.log
+!backend/data/tasks/.gitkeep
+!backend/data/exports/.gitkeep

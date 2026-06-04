@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>文档智能写作助手</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div>
+          <h1>文档智能写作助手</h1>
+          <p id="serviceState">正在连接后端</p>
+        </div>
+        <div class="topbar-actions">
+          <button id="refreshTasksBtn" class="ghost-button" type="button">刷新任务</button>
+          <button id="newTaskBtn" class="ghost-button" type="button">清空</button>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <section class="side-panel requirement-panel" aria-label="写作要求">
+          <div class="panel-head">
+            <h2>写作要求</h2>
+            <span id="taskBadge" class="status-badge">未创建</span>
+          </div>
+
+          <label>
+            主题
+            <input id="topicInput" type="text" value="人工智能对学习方式的影响" />
+          </label>
+
+          <div class="field-grid">
+            <label>
+              文体
+              <select id="genreSelect">
+                <option>议论文</option>
+                <option>说明文</option>
+                <option>记叙文</option>
+                <option>应用文</option>
+                <option>报告</option>
+                <option>总结</option>
+              </select>
+            </label>
+
+            <label>
+              字数
+              <input id="wordCountInput" type="number" min="200" max="5000" step="100" value="800" />
+            </label>
+          </div>
+
+          <label>
+            风格
+            <select id="styleSelect">
+              <option>正式、逻辑清晰</option>
+              <option>自然、亲切</option>
+              <option>简洁、明快</option>
+              <option>生动、有感染力</option>
+              <option>规范、适合公文</option>
+            </select>
+          </label>
+
+          <label>
+            补充要求
+            <textarea id="extraInput" rows="5">观点积极，结合现实例子</textarea>
+          </label>
+
+          <button id="generateBtn" class="primary-button" type="button">生成文档</button>
+
+          <div class="task-list-wrap">
+            <h3>最近任务</h3>
+            <div id="taskList" class="task-list"></div>
+          </div>
+        </section>
+
+        <section class="document-panel" aria-label="写作内容">
+          <div class="document-toolbar">
+            <div>
+              <h2 id="documentTitle">等待生成</h2>
+              <p id="documentMeta">提纲和正文会显示在这里</p>
+            </div>
+            <div class="toolbar-buttons">
+              <button id="saveDraftBtn" class="ghost-button" type="button" disabled>保存正文</button>
+              <button id="summaryBtn" class="ghost-button" type="button" disabled>生成摘要</button>
+            </div>
+          </div>
+
+          <div class="content-grid">
+            <section class="outline-view" aria-label="提纲">
+              <h3>提纲</h3>
+              <div id="outlineContent" class="outline-content empty-state">暂无提纲</div>
+            </section>
+
+            <section class="draft-view" aria-label="正文">
+              <h3>正文</h3>
+              <textarea id="draftEditor" class="draft-editor" spellcheck="false" disabled></textarea>
+            </section>
+          </div>
+        </section>
+
+        <section class="side-panel action-panel" aria-label="文本处理">
+          <div class="panel-head">
+            <h2>文本处理</h2>
+            <span id="versionBadge" class="status-badge">v0</span>
+          </div>
+
+          <label>
+            修订方式
+            <select id="revisionTypeSelect">
+              <option value="polish">润色</option>
+              <option value="rewrite">改写</option>
+              <option value="expand">扩写</option>
+              <option value="shorten">缩写</option>
+              <option value="correct">纠错</option>
+              <option value="custom">自定义</option>
+            </select>
+          </label>
+
+          <label>
+            修订要求
+            <textarea id="revisionInstruction" rows="5">语言更自然，段落衔接更顺畅</textarea>
+          </label>
+
+          <button id="reviseBtn" class="primary-button" type="button" disabled>执行修订</button>
+
+          <div class="export-row">
+            <button id="exportDocxBtn" class="ghost-button" type="button" disabled>导出 Word</button>
+            <button id="exportTxtBtn" class="ghost-button" type="button" disabled>导出文本</button>
+          </div>
+
+          <div class="summary-block">
+            <h3>摘要</h3>
+            <div id="summaryContent" class="summary-content empty-state">暂无摘要</div>
+          </div>
+
+          <div class="message-area" id="messageArea" role="status"></div>
+        </section>
+      </main>
+    </div>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>
+
