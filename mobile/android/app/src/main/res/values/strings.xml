@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">文档智能写作助手</string>
+    <string name="change_server">更换服务地址</string>
+    <string name="server_title">连接写作服务</string>
+    <string name="server_message">填写部署在电脑或服务器上的写作服务地址。</string>
+    <string name="server_hint">例如：https://writing.example.com</string>
+    <string name="connect">连接</string>
+    <string name="exit">退出</string>
+    <string name="server_invalid">请输入完整有效的服务地址。</string>
+</resources>

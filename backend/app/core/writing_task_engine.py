@@ -1,5 +1,6 @@
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlparse
 
 from app.core.context_binder import ContextBinder
 from app.core.model_adapter import ModelAdapter
@@ -8,6 +9,7 @@ from app.core.skill_registry import SkillRegistry
 from app.core.task_state import TaskStatus, ensure_transition
 from app.exporter.document_exporter import DocumentExporter
 from app.storage.task_store import TaskStore
+from app.storage.model_config_store import ModelConfigStore
 
 
 class WritingTaskEngine:
@@ -18,9 +20,52 @@ class WritingTaskEngine:
         self.store = TaskStore(data_dir / "tasks")
         self.context = ContextBinder(self.store)
         self.assembler = ResultAssembler()
-        self.model = ModelAdapter()
-        self.skills = SkillRegistry(self.model, self.assembler)
+        self.model_config = ModelConfigStore(data_dir)
+        self._reload_model()
         self.exporter = DocumentExporter(data_dir / "exports")
+
+    def get_model_config(self) -> dict[str, Any]:
+        return self.model_config.public_config(self.model)
+
+    def configure_model(self, data: dict[str, Any]) -> dict[str, Any]:
+        current = self.model_config.load()["remote"]
+        base_url = str(data.get("baseUrl", "")).strip()
+        model = str(data.get("model", "")).strip()
+        api_key = str(data.get("apiKey", "")).strip() or current["apiKey"]
+
+        parsed = urlparse(base_url)
+        if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+            raise ValueError("请输入有效的模型接口地址")
+        if not model:
+            raise ValueError("请输入模型名称")
+        if not api_key:
+            raise ValueError("请输入 API Key")
+
+        self.model_config.save_remote(base_url, api_key, model)
+        self._reload_model()
+        return self.get_model_config()
+
+    def use_local_model(self) -> dict[str, Any]:
+        self.model_config.use_local_mode()
+        self._reload_model()
+        return self.get_model_config()
+
+    def test_model_connection(self) -> dict[str, Any]:
+        if not self.model.remote_enabled:
+            raise ValueError("请先保存完整的远程模型配置")
+        result = self.model.complete(
+            [{"role": "user", "content": "请只回复：连接成功"}],
+            temperature=0,
+            max_tokens=32,
+        )
+        if not result.success:
+            detail = (result.error or "未知错误").replace("\n", " ")[:300]
+            raise ValueError(f"模型连接失败：{detail}")
+        return {
+            "message": "模型连接成功",
+            "preview": result.content[:120],
+            "model": self.model.model,
+        }
 
     def create_task(self, input_data: dict[str, Any]) -> dict[str, Any]:
         context = self.context.create_context(input_data)
@@ -147,3 +192,8 @@ class WritingTaskEngine:
 
     def _public_context(self, context: dict[str, Any]) -> dict[str, Any]:
         return {key: value for key, value in context.items() if key != "revisionType"}
+
+    def _reload_model(self) -> None:
+        config = self.model_config.get_effective_config()
+        self.model = ModelAdapter(**config) if config is not None else ModelAdapter()
+        self.skills = SkillRegistry(self.model, self.assembler)

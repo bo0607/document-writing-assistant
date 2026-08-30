@@ -3,6 +3,7 @@ from typing import Any
 from uuid import uuid4
 
 from app.core.task_state import TaskStatus
+from app.core.text_metrics import count_text_units
 from app.storage.task_store import TaskStore
 
 
@@ -70,6 +71,7 @@ class ContextBinder:
         context["draft"] = {
             "content": content,
             "version": current_version + 1,
+            "wordCount": count_text_units(content),
         }
         context["status"] = status
         return self.save_context(context)
@@ -103,6 +105,7 @@ class ContextBinder:
         context["draft"] = {
             "content": after_content,
             "version": before_version + 1,
+            "wordCount": count_text_units(after_content),
         }
         context["status"] = TaskStatus.REVISED.value
         return self.save_context(context)

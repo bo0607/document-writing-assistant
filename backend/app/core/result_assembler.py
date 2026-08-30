@@ -29,6 +29,10 @@ class ResultAssembler:
         return value if isinstance(value, dict) else None
 
     def normalize_paragraphs(self, content: str) -> str:
-        lines = [line.strip() for line in self.clean_text(content).splitlines()]
-        paragraphs = [line for line in lines if line]
+        blocks = re.split(r"\n\s*\n+", self.clean_text(content))
+        paragraphs = []
+        for block in blocks:
+            lines = [line.strip() for line in block.splitlines() if line.strip()]
+            if lines:
+                paragraphs.append("".join(lines))
         return "\n\n".join(paragraphs)

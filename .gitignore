@@ -4,7 +4,11 @@ __pycache__/
 .pytest_cache/
 backend/data/tasks/*.json
 backend/data/exports/*
+backend/data/model_config.json
 backend/server.pid
 backend/*.log
+build/
+release/
+*.spec
 !backend/data/tasks/.gitkeep
 !backend/data/exports/.gitkeep

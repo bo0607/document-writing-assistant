@@ -1,17 +1,25 @@
 import json
 import mimetypes
+import os
 import sys
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, quote, unquote, urlparse
 
-BACKEND_ROOT = Path(__file__).resolve().parents[1]
+if getattr(sys, "frozen", False):
+    BACKEND_ROOT = Path(sys._MEIPASS) / "backend"
+else:
+    BACKEND_ROOT = Path(__file__).resolve().parents[1]
 if str(BACKEND_ROOT) not in sys.path:
     sys.path.insert(0, str(BACKEND_ROOT))
 
 from app.core.writing_task_engine import WritingTaskEngine
 
-DATA_DIR = BACKEND_ROOT / "data"
+if getattr(sys, "frozen", False):
+    LOCAL_APP_DATA = Path(os.getenv("LOCALAPPDATA", Path.home() / "AppData" / "Local"))
+    DATA_DIR = LOCAL_APP_DATA / "DocumentWritingAssistant" / "data"
+else:
+    DATA_DIR = BACKEND_ROOT / "data"
 STATIC_DIR = BACKEND_ROOT / "static"
 ENGINE = WritingTaskEngine(DATA_DIR)
 
@@ -35,6 +43,12 @@ class ApiHandler(BaseHTTPRequestHandler):
                         "modelRemoteEnabled": ENGINE.model.remote_enabled,
                     }
                 )
+            elif path == "/api/model/config":
+                self._send_json({"success": True, "data": ENGINE.get_model_config()})
+            elif path == "/manifest.webmanifest":
+                self._send_static("manifest.webmanifest")
+            elif path == "/service-worker.js":
+                self._send_static("service-worker.js")
             elif path == "/api/tasks":
                 self._send_json({"success": True, "data": ENGINE.list_tasks()})
             elif path == "/api/skills":
@@ -59,6 +73,15 @@ class ApiHandler(BaseHTTPRequestHandler):
         try:
             if parsed.path == "/api/task/create":
                 data = ENGINE.create_task(body)
+                self._send_json({"success": True, "data": data})
+            elif parsed.path == "/api/model/config":
+                data = ENGINE.configure_model(body)
+                self._send_json({"success": True, "data": data})
+            elif parsed.path == "/api/model/test":
+                data = ENGINE.test_model_connection()
+                self._send_json({"success": True, "data": data})
+            elif parsed.path == "/api/model/local-mode":
+                data = ENGINE.use_local_model()
                 self._send_json({"success": True, "data": data})
             elif parsed.path == "/api/task/run-full":
                 data = ENGINE.run_full(body)
@@ -147,6 +170,8 @@ class ApiHandler(BaseHTTPRequestHandler):
         content_type = mimetypes.guess_type(target.name)[0] or "application/octet-stream"
         if target.suffix == ".js":
             content_type = "application/javascript; charset=utf-8"
+        elif target.suffix == ".webmanifest":
+            content_type = "application/manifest+json; charset=utf-8"
         elif target.suffix in {".html", ".css"}:
             content_type = f"{content_type}; charset=utf-8"
         self.send_response(200)

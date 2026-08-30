@@ -24,25 +24,34 @@ class ModelAdapter:
         model: str | None = None,
         timeout: int = 60,
     ):
-        self.base_url = (
-            base_url
-            or os.getenv("WRITING_ASSISTANT_BASE_URL")
-            or os.getenv("OPENAI_BASE_URL")
-            or ""
-        ).strip()
-        self.api_key = (
-            api_key
-            or os.getenv("WRITING_ASSISTANT_API_KEY")
-            or os.getenv("OPENAI_API_KEY")
-            or ""
-        ).strip()
-        self.model = (
-            model
-            or os.getenv("WRITING_ASSISTANT_MODEL")
-            or os.getenv("OPENAI_MODEL")
-            or "gpt-4o-mini"
+        self.base_url = self._resolve_value(
+            base_url,
+            "WRITING_ASSISTANT_BASE_URL",
+            "OPENAI_BASE_URL",
+        )
+        self.api_key = self._resolve_value(
+            api_key,
+            "WRITING_ASSISTANT_API_KEY",
+            "OPENAI_API_KEY",
+        )
+        self.model = self._resolve_value(
+            model,
+            "WRITING_ASSISTANT_MODEL",
+            "OPENAI_MODEL",
+            default="gpt-4o-mini",
         )
         self.timeout = timeout
+
+    @staticmethod
+    def _resolve_value(
+        explicit_value: str | None,
+        primary_env: str,
+        secondary_env: str,
+        default: str = "",
+    ) -> str:
+        if explicit_value is not None:
+            return explicit_value.strip()
+        return (os.getenv(primary_env) or os.getenv(secondary_env) or default).strip()
 
     @property
     def remote_enabled(self) -> bool:
@@ -102,4 +111,3 @@ class ModelAdapter:
             usage=body.get("usage"),
             error=None,
         )
-

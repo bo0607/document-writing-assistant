@@ -1,0 +1,20 @@
+{
+  "name": "文档智能写作助手",
+  "short_name": "写作助手",
+  "description": "面向文档与作文生成的智能写作助手",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f4f6f3",
+  "theme_color": "#28736c",
+  "lang": "zh-CN",
+  "icons": [
+    {
+      "src": "/static/icons/app-icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

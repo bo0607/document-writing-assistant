@@ -60,31 +60,30 @@ class OutlineSkill(WritingSkill):
         genre = requirement.get("genre") or "议论文"
         if "说明" in genre:
             sections = [
-                {"heading": "开篇说明", "points": ["引出说明对象", "交代写作背景"]},
-                {"heading": "特点介绍", "points": ["说明主要特征", "列举典型表现"]},
-                {"heading": "作用分析", "points": ["分析现实价值", "说明影响意义"]},
-                {"heading": "总结提升", "points": ["概括全文", "提出理性认识"]},
+                {"heading": "从身边现象切入", "points": ["交代说明对象", "建立具体场景"]},
+                {"heading": "说清关键特点", "points": ["说明主要特征", "列举典型表现"]},
+                {"heading": "联系实际影响", "points": ["分析现实价值", "说明影响意义"]},
+                {"heading": "留下清晰认识", "points": ["回应主题", "补充理性判断"]},
             ]
             thesis = f"围绕{topic}进行清晰说明，帮助读者形成准确理解。"
         elif "记叙" in genre:
             sections = [
-                {"heading": "开端", "points": ["交代时间、地点和人物", "引出事件"]},
-                {"heading": "发展", "points": ["描写事件经过", "突出细节"]},
-                {"heading": "高潮", "points": ["呈现关键冲突或转折", "表达真实感受"]},
-                {"heading": "结尾", "points": ["点明收获", "升华主题"]},
+                {"heading": "事情如何开始", "points": ["交代时间、地点和人物", "引出事件"]},
+                {"heading": "经历中的细节", "points": ["描写事件经过", "突出细节"]},
+                {"heading": "真正的转折", "points": ["呈现关键冲突或转折", "表达真实感受"]},
+                {"heading": "留下的感受", "points": ["点明收获", "回到主题"]},
             ]
             thesis = f"通过与{topic}相关的具体经历表达感悟。"
         else:
             sections = [
-                {"heading": "引言", "points": ["引出话题", "提出中心观点"]},
-                {"heading": "论述一", "points": ["分析积极意义", "结合现实例子"]},
-                {"heading": "论述二", "points": ["指出需要注意的问题", "体现辩证思考"]},
-                {"heading": "结尾", "points": ["总结观点", "提出行动建议"]},
+                {"heading": "从真实变化谈起", "points": ["引出话题", "提出中心判断"]},
+                {"heading": "看见实际价值", "points": ["分析积极意义", "结合现实例子"]},
+                {"heading": "把问题想得更完整", "points": ["指出需要注意的问题", "体现辩证思考"]},
+                {"heading": "回到可做的事", "points": ["回应观点", "提出行动建议"]},
             ]
             thesis = f"{topic}具有重要现实意义，但也需要理性认识和正确运用。"
         return {
-            "title": f"{topic}之我见",
+            "title": topic,
             "thesis": thesis,
             "sections": sections,
         }
-

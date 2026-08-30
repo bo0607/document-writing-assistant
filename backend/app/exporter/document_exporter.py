@@ -71,6 +71,7 @@ class DocumentExporter:
         meta_run = meta.add_run(
             f"文体：{requirement.get('genre', '未设置')}  "
             f"目标字数：{requirement.get('wordCount', '未设置')}  "
+            f"实际字数：{context.get('draft', {}).get('wordCount', '未统计')}  "
             f"风格：{requirement.get('style', '未设置')}"
         )
         meta_run.font.size = Pt(9)
@@ -115,6 +116,11 @@ class DocumentExporter:
                 parts.append(section.get("heading", "段落"))
                 for point in section.get("points", []):
                     parts.append(f"- {point}")
+            parts.append("")
+        draft_info = context.get("draft", {})
+        actual_count = draft_info.get("wordCount")
+        if actual_count:
+            parts.append(f"实际字数：{actual_count}")
             parts.append("")
         parts.extend(["正文", *self._draft_paragraphs(draft, str(title))])
         if summary:

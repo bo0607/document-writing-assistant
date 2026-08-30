@@ -8,6 +8,8 @@ def main() -> None:
     tests = [
         root / "tests" / "http_smoke_test.py",
         root / "tests" / "export_structure_test.py",
+        root / "tests" / "word_count_test.py",
+        root / "tests" / "natural_draft_test.py",
     ]
     for test in tests:
         print(f"Running {test.name}...")
